@@ -1,0 +1,2 @@
+Telethon
+yt-dlp

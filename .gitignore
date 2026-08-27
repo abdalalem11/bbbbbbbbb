@@ -1,0 +1,16 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+data/*/.env
+data/*/source/.env
+data/*/source/**/__pycache__/
+data/accounts/*/session.txt
+data/accounts/*/stdout.log
+data/accounts/*/stderr.log
+data/factory.db
+data/accounts/*/source/.git/
+data/accounts/*/source/**/*.session
+.DS_Store
+*.session
+*.session-journal

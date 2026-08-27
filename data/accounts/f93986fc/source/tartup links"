@@ -1,0 +1,53 @@
+[1mdiff --git a/zlzl/utils/startup.py b/zlzl/utils/startup.py[m
+[1mindex 06894a9..3386d62 100644[m
+[1m--- a/zlzl/utils/startup.py[m
+[1m+++ b/zlzl/utils/startup.py[m
+[36m@@ -49,7 +49,7 @@[m [mZel_Dev = (1895219306, 925972505)[m
+ Zed_Dev = (1895219306, 925972505, 5176749470, 2095357462, 6269975462, 6227985448, 6470835326, 5616315677)[m
+ Zed_Vip = Zed_Dev[m
+ Zzz_Vip = Zed_Dev[m
+[31m-zchannel = {"@zed_thon", "@zzzvrr", "@RR_U_RR", "@zzkrr", "@zzclll", "@heroku_error", "@MMM07", "@zziddd"}[m
+[32m+[m[32mzchannel = {"@zed_thon", "@zzzvrr", "@RR_U_RR", "@zzkrr", "@zzclll", "@u_t_r", "@MMM07", "@zziddd"}[m
+ zzprivatech = {"WLpUejiwrSdjZGE0", "HIcYX7K58rFkMGZk", "5bgh-lZeaU80ZDU0"}[m
+ heroku_api = "https://api.heroku.com"[m
+ if Config.HEROKU_APP_NAME is not None and Config.HEROKU_API_KEY is not None:[m
+[36m@@ -141,10 +141,10 @@[m [masync def setup_bot():[m
+             LOGS.error("- شرح تغيير توكن البوت من فارات هيروكو ( https://t.me/Z1ZZP/10 )")[m
+         elif "Cannot cast NoneType to any kind of int" in str(e):[m
+             LOGS.error(f"- كـود تيرمكـس غيـر صالـح او منتهـي - {str(e)}")[m
+[31m-            LOGS.error("- شرح تغيير كود تيرمكس من فارات هيروكو ( https://t.me/heroku_error/25 )")[m
+[32m+[m[32m            LOGS.error("- شرح تغيير كود تيرمكس من فارات هيروكو ( https://t.me/u_t_r/25 )")[m
+         elif "was used under two different IP addresses" in str(e):[m
+             LOGS.error(f"- كـود تيرمكـس غيـر صالـح او منتهـي - {str(e)}")[m
+[31m-            LOGS.error("- شرح تغيير كود تيرمكس من فارات هيروكو ( https://t.me/heroku_error/25 )")[m
+[32m+[m[32m            LOGS.error("- شرح تغيير كود تيرمكس من فارات هيروكو ( https://t.me/u_t_r/25 )")[m
+         else:[m
+             LOGS.error(f"كـود تيرمكس - {str(e)}")[m
+         sys.exit()[m
+[36m@@ -222,7 +222,7 @@[m [masync def startupmessage():[m
+                 BOTLOG_CHATID,[m
+                 "https://telegra.ph/file/f821d27af168206b472ad.mp4",[m
+                 caption=f"**⌔ مرحبـاً عـزيـزي** {Zname} 🫂\n**⌔ تـم تشغـيل سـورس زدثــون 🧸♥️**\n**⌔ التنصيب الخاص بـك .. بنجـاح ✅**\n**⌔ لـ تصفح قائمـة الاوامـر 🕹**\n**⌔ ارسـل الامـر** `{cmdhr}مساعده`",[m
+[31m-                buttons=[[Button.url("𝗭𝗧𝗵𝗼𝗻 🎡 𝗨𝘀𝗲𝗿𝗯𝗼𝘁", "https://t.me/+WLpUejiwrSdjZGE0")],[Button.url("إشتراكـات القسـم المدفـوع", "https://t.me/ZedThon/9")],[Button.url("حلـول الأخطـاء", "https://t.me/heroku_error"), Button.url("التحديثات المدفوعـة", "https://t.me/+5bgh-lZeaU80ZDU0")],[Button.url("𝗭𝗧𝗵𝗼𝗻 𝗦𝘂𝗽𝗽𝗼𝗿𝘁", "https://t.me/+HIcYX7K58rFkMGZk")],[Button.url("تواصـل مطـور السـورس", "https://t.me/BBBlibot")]][m
+[32m+[m[32m                buttons=[[Button.url("𝗭𝗧𝗵𝗼𝗻 🎡 𝗨𝘀𝗲𝗿𝗯𝗼𝘁", "https://t.me/u_t_r")],[Button.url("إشتراكـات القسـم المدفـوع", "https://t.me/ZedThon/9")],[Button.url("حلـول الأخطـاء", "https://t.me/u_t_r"), Button.url("التحديثات المدفوعـة", "https://t.me/u_t_r")],[Button.url("𝗭𝗧𝗵𝗼𝗻 𝗦𝘂𝗽𝗽𝗼𝗿𝘁", "https://t.me/u_t_r")],[Button.url("تواصـل مطـور السـورس", "https://t.me/u_t_r")]][m
+             )[m
+     except Exception as e:[m
+         LOGS.error(e)[m
+[36m@@ -451,7 +451,7 @@[m [masync def verifyLoggerGroup():[m
+         except Exception as e:[m
+             if "can't create channels or chat" in str(e):[m
+                 print("- حسابك محظور من شركة تيليجرام وغير قادر على إنشاء مجموعات السجل والتخزين")[m
+[31m-                print("- قم بالذهاب الى طريقة الحل عبر الرابط (https://t.me/heroku_error/22)")[m
+[32m+[m[32m                print("- قم بالذهاب الى طريقة الحل عبر الرابط (https://t.me/u_t_r/22)")[m
+                 print("- لتطبيق الطريقة والاستمرار في التنصيب")[m
+             else:[m
+                 print(str(e))[m
+[36m@@ -492,7 +492,7 @@[m [masync def verifyLoggerGroup():[m
+         except Exception as e:[m
+             if "can't create channels or chat" in str(e):[m
+                 print("- حسابك محظور من شركة تيليجرام وغير قادر على إنشاء مجموعات السجل والتخزين")[m
+[31m-                print("- قم بالذهاب الى طريقة الحل عبر الرابط (https://t.me/heroku_error/22)")[m
+[32m+[m[32m                print("- قم بالذهاب الى طريقة الحل عبر الرابط (https://t.me/u_t_r/22)")[m
+                 print("- لتطبيق الطريقة والاستمرار في التنصيب")[m
+             else:[m
+                 print(str(e))[m
