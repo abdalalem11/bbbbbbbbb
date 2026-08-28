@@ -14,7 +14,7 @@ SOURCE_REPO = os.getenv(
     "SOURCE_REPO",
     "https://github.com/abdalalem11/ZTele.git",
 )
-SOURCE_BRANCH = os.getenv("SOURCE_BRANCH", "master")
+SOURCE_BRANCH = os.getenv("SOURCE_BRANCH", "factory-source")
 
 DEVELOPER = os.getenv("DEVELOPER", "@u_t_r")
 SOURCE_CHANNEL = os.getenv("SOURCE_CHANNEL", "@u_t_r")
