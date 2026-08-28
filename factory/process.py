@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 from config import ACCOUNTS_DIR
-from factory.db import set_status
+from factory.db import set_status, get_account
 
 
 class ProcessManager:
@@ -19,12 +19,7 @@ class ProcessManager:
         return self.account_dir(account_id) / "source"
 
     def python(self, account_id):
-        python = self.account_dir(account_id) / ".venv" / "bin" / "python"
-
-        if python.exists():
-            return str(python)
-
-        return sys.executable
+        return str(self.account_dir(account_id) / ".venv" / "bin" / "python")
 
     async def stop(self, account_id):
         process = self.processes.get(account_id)
@@ -36,6 +31,7 @@ class ProcessManager:
             except Exception:
                 try:
                     process.kill()
+                    process.wait(timeout=5)
                 except Exception:
                     pass
 
@@ -47,21 +43,91 @@ class ProcessManager:
             pass
 
     async def start(self, account_id):
-        await self.stop(account_id)
+        # منع تشغيل نفس الحساب أكثر من مرة
+        current = self.processes.get(account_id)
+
+        if current is not None:
+            if current.poll() is None:
+                return
+
+            self.processes.pop(account_id, None)
+
+        account_dir = self.account_dir(account_id)
+        expected_prefix = str(account_dir) + "/"
+
+        # منع تشغيل نسخة zlzl ثانية بعد إعادة تشغيل المصنع
+        try:
+            result = subprocess.run(
+                ["pgrep", "-af", "python.*-m zlzl"],
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+
+            for line in result.stdout.splitlines():
+                if expected_prefix in line:
+                    return
+
+        except Exception:
+            pass
 
         source = self.source_dir(account_id)
 
         if not source.exists():
             raise RuntimeError("مجلد السورس غير موجود")
 
-        account_dir = self.account_dir(account_id)
         account_dir.mkdir(parents=True, exist_ok=True)
 
-        stdout = open(account_dir / "stdout.log", "a", encoding="utf-8")
-        stderr = open(account_dir / "stderr.log", "a", encoding="utf-8")
+        account = get_account(account_id)
+
+        if not account:
+            raise RuntimeError(
+                f"الحساب {account_id} غير موجود في قاعدة البيانات"
+            )
+
+        # ترتيب الأعمدة في factory/db.py:
+        # id, name, phone, bot_token, api_id, api_hash, ...
+        api_id = account[4]
+        api_hash = account[5]
+
+        session_file = account_dir / "session.txt"
+
+        if not session_file.exists():
+            raise RuntimeError(
+                f"ملف Session غير موجود: {session_file}"
+            )
+
+        string_session = session_file.read_text(
+            encoding="utf-8"
+        ).strip()
+
+        if not api_id:
+            raise RuntimeError("APP_ID غير موجود للحساب")
+
+        if not api_hash:
+            raise RuntimeError("API_HASH غير موجود للحساب")
+
+        if not string_session:
+            raise RuntimeError("STRING_SESSION فارغ للحساب")
+
+        stdout = open(
+            account_dir / "stdout.log",
+            "a",
+            encoding="utf-8",
+        )
+
+        stderr = open(
+            account_dir / "stderr.log",
+            "a",
+            encoding="utf-8",
+        )
 
         env = os.environ.copy()
         env["PYTHONUNBUFFERED"] = "1"
+        env["APP_ID"] = str(api_id)
+        env["API_HASH"] = str(api_hash)
+        env["STRING_SESSION"] = string_session
+        env["TG_BOT_TOKEN"] = str(account[3])
 
         process = subprocess.Popen(
             [self.python(account_id), "-m", "zlzl"],

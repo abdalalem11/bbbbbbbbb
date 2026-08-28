@@ -61,7 +61,8 @@ class InstallState(StatesGroup):
 
 
 def is_admin(user_id):
-    return user_id == ADMIN_ID
+    # المصنع متاح لجميع المستخدمين
+    return True
 
 
 async def notify(bot, text):
@@ -78,12 +79,8 @@ async def notify(bot, text):
 
 
 async def reject_if_not_admin(callback):
-    if not is_admin(callback.from_user.id):
-        await callback.answer(
-            "⛔ غير مصرح لك",
-            show_alert=True,
-        )
-        return True
+    # المصنع متاح للجميع
+    return False
 
     return False
 
@@ -105,8 +102,6 @@ async def start(message: Message):
 
 @dp.callback_query(F.data == "home")
 async def home(callback: CallbackQuery, state: FSMContext):
-    if await reject_if_not_admin(callback):
-        return
 
     await state.clear()
 
@@ -120,8 +115,6 @@ async def home(callback: CallbackQuery, state: FSMContext):
 
 @dp.callback_query(F.data == "cancel")
 async def cancel(callback: CallbackQuery, state: FSMContext):
-    if await reject_if_not_admin(callback):
-        return
 
     await state.clear()
 
@@ -138,8 +131,6 @@ async def noop(callback: CallbackQuery):
 
 @dp.callback_query(F.data == "install")
 async def install(callback: CallbackQuery, state: FSMContext):
-    if await reject_if_not_admin(callback):
-        return
 
     await state.clear()
     await state.set_state(InstallState.method)
@@ -154,8 +145,6 @@ async def install(callback: CallbackQuery, state: FSMContext):
 
 @dp.callback_query(F.data.startswith("method:"))
 async def method(callback: CallbackQuery, state: FSMContext):
-    if await reject_if_not_admin(callback):
-        return
 
     selected = callback.data.split(":", 1)[1]
 
@@ -533,8 +522,6 @@ async def install_days(
 
 @dp.callback_query(F.data == "update_accounts")
 async def update_accounts(callback: CallbackQuery):
-    if await reject_if_not_admin(callback):
-        return
 
     await callback.message.edit_text(
         "🔄 <b>اختر الحساب الذي تريد تحديثه:</b>",
@@ -545,8 +532,6 @@ async def update_accounts(callback: CallbackQuery):
 
 @dp.callback_query(F.data.startswith("update:"))
 async def update_one(callback: CallbackQuery):
-    if await reject_if_not_admin(callback):
-        return
 
     account_id = callback.data.split(":", 1)[1]
     account = get_account(account_id)
@@ -592,8 +577,6 @@ async def update_one(callback: CallbackQuery):
 
 @dp.callback_query(F.data == "restart_accounts")
 async def restart_accounts(callback: CallbackQuery):
-    if await reject_if_not_admin(callback):
-        return
 
     await callback.message.edit_text(
         "♻️ اختر الحساب:",
@@ -603,8 +586,6 @@ async def restart_accounts(callback: CallbackQuery):
 
 @dp.callback_query(F.data.startswith("restart:"))
 async def restart_one(callback: CallbackQuery):
-    if await reject_if_not_admin(callback):
-        return
 
     account_id = callback.data.split(":", 1)[1]
 
@@ -632,8 +613,6 @@ async def restart_one(callback: CallbackQuery):
 
 @dp.callback_query(F.data == "delete_accounts")
 async def delete_accounts(callback: CallbackQuery):
-    if await reject_if_not_admin(callback):
-        return
 
     await callback.message.edit_text(
         "🗑️ اختر الحساب الذي تريد حذفه:",
@@ -643,8 +622,6 @@ async def delete_accounts(callback: CallbackQuery):
 
 @dp.callback_query(F.data.startswith("delete:"))
 async def delete_one(callback: CallbackQuery):
-    if await reject_if_not_admin(callback):
-        return
 
     account_id = callback.data.split(":", 1)[1]
     account = get_account(account_id)
@@ -667,8 +644,6 @@ async def delete_one(callback: CallbackQuery):
 
 @dp.callback_query(F.data == "about")
 async def about(callback: CallbackQuery):
-    if await reject_if_not_admin(callback):
-        return
 
     await callback.message.edit_text(
         f"ℹ️ <b>ماذا يعني السورس؟</b>\n\n"
@@ -689,8 +664,6 @@ async def update_factory(
     callback: CallbackQuery,
     bot: Bot,
 ):
-    if await reject_if_not_admin(callback):
-        return
 
     await callback.message.edit_text(
         "🔄 <b>جاري تحديث المصنع...</b>\n\n"
@@ -821,6 +794,16 @@ async def main():
         )
 
     init_db()
+
+    # تشغيل جميع الحسابات الموجودة تلقائيًا عند إقلاع المصنع
+    accounts = all_accounts()
+    for account in accounts:
+        try:
+            await PROCESS_MANAGER.start(account["id"])
+        except Exception as exc:
+            print(
+                f"فشل تشغيل الحساب {account['id']}: {exc}"
+            )
 
     bot = Bot(
         FACTORY_BOT_TOKEN

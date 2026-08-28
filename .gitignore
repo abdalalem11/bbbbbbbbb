@@ -14,3 +14,11 @@ data/accounts/*/source/**/*.session
 .DS_Store
 *.session
 *.session-journal
+
+.env
+**/.env
+*.session
+**/*.session
+factory.log
+*.bak
+**/*.bak
