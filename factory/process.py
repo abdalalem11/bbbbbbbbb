@@ -1,7 +1,6 @@
 import os
 import signal
 import subprocess
-import sys
 from pathlib import Path
 
 from config import ACCOUNTS_DIR
@@ -19,7 +18,12 @@ class ProcessManager:
         return self.account_dir(account_id) / "source"
 
     def python(self, account_id):
-        return str(self.account_dir(account_id) / ".venv" / "bin" / "python")
+        return str(
+            self.account_dir(account_id)
+            / ".venv"
+            / "bin"
+            / "python"
+        )
 
     async def stop(self, account_id):
         process = self.processes.get(account_id)
@@ -43,7 +47,7 @@ class ProcessManager:
             pass
 
     async def start(self, account_id):
-        # منع تشغيل نفس الحساب أكثر من مرة
+        # منع تشغيل نفس الحساب مرتين
         current = self.processes.get(account_id)
 
         if current is not None:
@@ -53,30 +57,23 @@ class ProcessManager:
             self.processes.pop(account_id, None)
 
         account_dir = self.account_dir(account_id)
-        expected_prefix = str(account_dir) + "/"
-
-        # منع تشغيل نسخة zlzl ثانية بعد إعادة تشغيل المصنع
-        try:
-            result = subprocess.run(
-                ["pgrep", "-af", "python.*-m zlzl"],
-                capture_output=True,
-                text=True,
-                timeout=5,
-            )
-
-            for line in result.stdout.splitlines():
-                if expected_prefix in line:
-                    return
-
-        except Exception:
-            pass
-
         source = self.source_dir(account_id)
+        python = self.python(account_id)
 
         if not source.exists():
-            raise RuntimeError("مجلد السورس غير موجود")
+            raise RuntimeError(
+                f"مجلد السورس غير موجود: {source}"
+            )
 
-        account_dir.mkdir(parents=True, exist_ok=True)
+        if not Path(python).exists():
+            raise RuntimeError(
+                f"Python الخاص بالحساب غير موجود: {python}"
+            )
+
+        account_dir.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
 
         account = get_account(account_id)
 
@@ -85,10 +82,12 @@ class ProcessManager:
                 f"الحساب {account_id} غير موجود في قاعدة البيانات"
             )
 
-        # ترتيب الأعمدة في factory/db.py:
+        # ترتيب الأعمدة:
         # id, name, phone, bot_token, api_id, api_hash, ...
+
         api_id = account[4]
         api_hash = account[5]
+        bot_token = account[3] or ""
 
         session_file = account_dir / "session.txt"
 
@@ -102,35 +101,82 @@ class ProcessManager:
         ).strip()
 
         if not api_id:
-            raise RuntimeError("APP_ID غير موجود للحساب")
+            raise RuntimeError(
+                "APP_ID غير موجود للحساب"
+            )
 
         if not api_hash:
-            raise RuntimeError("API_HASH غير موجود للحساب")
+            raise RuntimeError(
+                "API_HASH غير موجود للحساب"
+            )
 
         if not string_session:
-            raise RuntimeError("STRING_SESSION فارغ للحساب")
+            raise RuntimeError(
+                "STRING_SESSION فارغ للحساب"
+            )
+
+        # منع تشغيل نسخة أخرى من نفس الحساب
+        try:
+            result = subprocess.run(
+                ["pgrep", "-af", "python.*-m zlzl"],
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+
+            for line in result.stdout.splitlines():
+                if str(source) in line:
+                    return
+
+        except Exception:
+            pass
+
+        stdout_path = account_dir / "stdout.log"
+        stderr_path = account_dir / "stderr.log"
 
         stdout = open(
-            account_dir / "stdout.log",
+            stdout_path,
             "a",
             encoding="utf-8",
         )
 
         stderr = open(
-            account_dir / "stderr.log",
+            stderr_path,
             "a",
             encoding="utf-8",
         )
 
+        # بيئة مستقلة للحساب
         env = os.environ.copy()
+
         env["PYTHONUNBUFFERED"] = "1"
+
         env["APP_ID"] = str(api_id)
         env["API_HASH"] = str(api_hash)
         env["STRING_SESSION"] = string_session
-        env["TG_BOT_TOKEN"] = str(account[3])
+        env["TG_BOT_TOKEN"] = str(bot_token)
+        env["ZELZAL_A"] = "@u_t_rbbb"
+
+        # إجبار Python على استخدام مكتبات هذا الحساب
+        env["VIRTUAL_ENV"] = str(
+            account_dir / ".venv"
+        )
+
+        env["PATH"] = (
+            str(account_dir / ".venv" / "bin")
+            + os.pathsep
+            + env.get("PATH", "")
+        )
+
+        # جعل استيراد zlzl من نفس السورس
+        env["PYTHONPATH"] = str(source)
 
         process = subprocess.Popen(
-            [self.python(account_id), "-m", "zlzl"],
+            [
+                python,
+                "-m",
+                "zlzl",
+            ],
             cwd=source,
             env=env,
             stdout=stdout,
@@ -139,7 +185,11 @@ class ProcessManager:
         )
 
         self.processes[account_id] = process
-        set_status(account_id, "running")
+
+        set_status(
+            account_id,
+            "running",
+        )
 
     async def restart(self, account_id):
         await self.stop(account_id)

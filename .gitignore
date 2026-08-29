@@ -22,3 +22,14 @@ data/accounts/*/source/**/*.session
 factory.log
 *.bak
 **/*.bak
+
+# Account data / secrets
+data/accounts/
+*.session
+*.session-journal
+.env
+
+# Local backup files
+*.bak
+*.bak2
+*.before_*
