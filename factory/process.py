@@ -155,7 +155,7 @@ class ProcessManager:
         env["API_HASH"] = str(api_hash)
         env["STRING_SESSION"] = string_session
         env["TG_BOT_TOKEN"] = str(bot_token)
-        env["ZELZAL_A"] = "@u_t_rbbb"
+        env["ZELZAL_A"] = "@u_t_r"
 
         # إجبار Python على استخدام مكتبات هذا الحساب
         env["VIRTUAL_ENV"] = str(
