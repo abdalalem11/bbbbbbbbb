@@ -49,7 +49,14 @@ Zel_Dev = (1895219306, 925972505)
 Zed_Dev = (1895219306, 925972505, 5176749470, 2095357462, 6269975462, 6227985448, 6470835326, 5616315677)
 Zed_Vip = Zed_Dev
 Zzz_Vip = Zed_Dev
-zchannel = {"@zed_thon", "@zzzvrr", "@RR_U_RR", "@zzkrr", "@zzclll", "@u_t_r", "@MMM07", "@zziddd"}
+zchannel = {
+    "@zzzcxzl",
+    "@u_t_rbbb",
+    "@zzzzxxzxcx",
+    "@u_t_rh",
+    "@SSSTlF",
+    "@u_t_r",
+}
 zzprivatech = {"WLpUejiwrSdjZGE0", "HIcYX7K58rFkMGZk", "5bgh-lZeaU80ZDU0"}
 heroku_api = "https://api.heroku.com"
 if Config.HEROKU_APP_NAME is not None and Config.HEROKU_API_KEY is not None:
@@ -222,7 +229,7 @@ async def startupmessage():
                 BOTLOG_CHATID,
                 "https://telegra.ph/file/f821d27af168206b472ad.mp4",
                 caption=f"**⌔ مرحبـاً عـزيـزي** {Zname} 🫂\n**⌔ تـم تشغـيل سـورس زدثــون 🧸♥️**\n**⌔ التنصيب الخاص بـك .. بنجـاح ✅**\n**⌔ لـ تصفح قائمـة الاوامـر 🕹**\n**⌔ ارسـل الامـر** `{cmdhr}مساعده`",
-                buttons=[[Button.url("𝗭𝗧𝗵𝗼𝗻 🎡 𝗨𝘀𝗲𝗿𝗯𝗼𝘁", "https://t.me/u_t_r")],[Button.url("إشتراكـات القسـم المدفـوع", "https://t.me/ZedThon/9")],[Button.url("حلـول الأخطـاء", "https://t.me/u_t_r"), Button.url("التحديثات المدفوعـة", "https://t.me/u_t_r")],[Button.url("𝗭𝗧𝗵𝗼𝗻 𝗦𝘂𝗽𝗽𝗼𝗿𝘁", "https://t.me/u_t_r")],[Button.url("تواصـل مطـور السـورس", "https://t.me/u_t_r")]]
+                buttons=[[Button.url("𝗭𝗧𝗵𝗼𝗻 🎡 𝗨𝘀𝗲𝗿𝗯𝗼𝘁", "https://t.me/u_t_r")],[Button.url("إشتراكـات القسـم المدفـوع", "@u_t_r")],[Button.url("حلـول الأخطـاء", "https://t.me/u_t_r"), Button.url("التحديثات المدفوعـة", "https://t.me/u_t_r")],[Button.url("𝗭𝗧𝗵𝗼𝗻 𝗦𝘂𝗽𝗽𝗼𝗿𝘁", "https://t.me/u_t_r")],[Button.url("تواصـل مطـور السـورس", "https://t.me/u_t_r")]]
             )
     except Exception as e:
         LOGS.error(e)
